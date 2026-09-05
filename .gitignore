@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Generated reports
+security_report.txt
+security_report.json
+analysis.json
+test_report.txt
+
+# Temporary test logs
+test_*.log
+
+# macOS
+.DS_Store
