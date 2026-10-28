@@ -1,5 +1,7 @@
 # Security Log Analyzer 🛡️
 
+> 🚧 **Work in progress** – this project is still under development, and more changes are coming.
+
 A Python-based cybersecurity tool for analyzing login logs and detecting suspicious authentication activity.
 
 ## 📌 About
