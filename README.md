@@ -1,8 +1,21 @@
-# Security Log Analyzer 
+# 🛡️ Security Log Analyzer
 
 >  **Work in progress** – this project is still under development, and more changes are coming.
 
+### 🔗 [**Live SIEM Dashboard →**](https://nimamalekiiii.github.io/security-log-analyzer/)
+
 A Python-based cybersecurity tool for analyzing login logs and detecting suspicious authentication activity.
+
+
+## 🔗 Related projects
+
+This tool is part of a full **red-team → blue-team** workflow:
+
+| | Project | Role |
+|---|---|---|
+| 🧪 | [**SecForge**](https://github.com/Nimamalekiiii/secforge-lab) | The isolated lab where the attacks are performed (**red team**) |
+| 🔎 | **Security Log Analyzer** *(this repo)* | Detects those attacks in the logs (**blue team**) |
+| 📊 | [**Live SIEM Dashboard**](https://nimamalekiiii.github.io/security-log-analyzer/) | Visualizes the detections as a SOC-style overview |
 
 ##  About
 
