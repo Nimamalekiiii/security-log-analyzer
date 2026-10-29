@@ -45,6 +45,23 @@ python web_analyzer.py web_access.log --json
 
 Each source IP gets a risk score and level, just like the login analysis.
 
+
+##  SIEM Dashboard
+
+A visual dashboard summarizes all detected attacks – attack types, top attacker
+IPs, a timeline and a findings table – reading from both the login log and the
+web access log.
+
+**Live:** https://nimamalekiiii.github.io/security-log-analyzer/
+
+```bash
+# Regenerate the dashboard data from your logs
+python generate_dashboard.py
+# then open docs/index.html in a browser
+```
+
+The dashboard lives in `docs/` and is served with GitHub Pages.
+
 ##  Risk Assessment
 
 Each IP address receives a risk score from `0–100`.

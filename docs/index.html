@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SecForge SIEM</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="data.js"></script>
+<style>
+  :root{
+    --bg:#0d1117; --card:#161b22; --line:#30363d; --text:#e6edf3; --muted:#8b949e;
+    --red:#f85149; --orange:#e3b341; --green:#3fb950; --blue:#58a6ff; --purple:#bc8cff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  header{padding:28px 20px 10px;max-width:1100px;margin:0 auto}
+  h1{margin:0;font-size:26px}
+  .sub{color:var(--muted);font-size:14px;margin-top:4px}
+  main{max-width:1100px;margin:0 auto;padding:16px 20px 60px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:18px 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card .n{font-size:30px;font-weight:800}
+  .card .l{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+  .n.red{color:var(--red)} .n.orange{color:var(--orange)} .n.green{color:var(--green)} .n.blue{color:var(--blue)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .panel h2{margin:0 0 12px;font-size:15px;color:var(--text)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600}
+  .pill{padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700}
+  .HIGH{background:rgba(248,81,73,.15);color:var(--red)}
+  .MEDIUM{background:rgba(227,179,65,.15);color:var(--orange)}
+  .LOW{background:rgba(63,185,80,.15);color:var(--green)}
+  code{background:#21262d;padding:1px 6px;border-radius:5px;font-size:12px}
+  footer{max-width:1100px;margin:0 auto;padding:0 20px 40px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🛡️ SecForge SIEM</h1>
+  <div class="sub">Sanntids-oversikt over angrep oppdaget i loggene &middot; generert <span id="gen"></span></div>
+</header>
+<main>
+  <div class="cards" id="cards"></div>
+  <div class="grid">
+    <div class="panel"><h2>Angrepstyper</h2><canvas id="types" height="220"></canvas></div>
+    <div class="panel"><h2>Topp angriper-IP-er (risikoscore)</h2><canvas id="ips" height="220"></canvas></div>
+  </div>
+  <div class="panel" style="margin-bottom:16px"><h2>Angrep over tid</h2><canvas id="timeline" height="90"></canvas></div>
+  <div class="panel">
+    <h2>Funn</h2>
+    <table><thead><tr><th>IP</th><th>Kilde</th><th>Detalj</th><th>Score</th><th>Nivå</th></tr></thead>
+    <tbody id="rows"></tbody></table>
+  </div>
+</main>
+<footer>SecForge SIEM &middot; bygget på <code>security-log-analyzer</code> &middot; av Nima Maleki</footer>
+<script>
+const D = window.SIEM_DATA || {summary:{},attack_types:{},top_ips:[],timeline:[],findings:[]};
+
+// --- Tekst, kort og tabell tegnes alltid (uavhengig av Chart.js) ---
+document.getElementById('gen').textContent = D.generated || '';
+const s = D.summary;
+const cards = [
+  ['Hendelser totalt', s.total_events, 'blue'],
+  ['Høy risiko', s.high_risk, 'red'],
+  ['Middels risiko', s.medium_risk, 'orange'],
+  ['Lav risiko', s.low_risk, 'green'],
+  ['Unike IP-er', s.unique_ips, ''],
+];
+document.getElementById('cards').innerHTML = cards.map(([l,n,c])=>
+  `<div class="card"><div class="n ${c}">${n??0}</div><div class="l">${l}</div></div>`).join('');
+document.getElementById('rows').innerHTML = (D.findings||[]).map(f=>
+  `<tr><td><code>${f.ip}</code></td><td>${f.source}</td><td>${f.detail}</td>
+   <td>${f.risk_score}/100</td><td><span class="pill ${f.risk_level}">${f.risk_level}</span></td></tr>`).join('');
+
+// --- Grafer tegnes kun hvis Chart.js lastet ---
+if (window.Chart) {
+  const C = {colors:['#f85149','#e3b341','#bc8cff','#58a6ff','#3fb950','#db61a2','#ff7b72']};
+  Chart.defaults.color = '#8b949e'; Chart.defaults.borderColor = '#30363d'; Chart.defaults.font.family='inherit';
+
+  new Chart(document.getElementById('types'),{type:'doughnut',
+    data:{labels:Object.keys(D.attack_types),datasets:[{data:Object.values(D.attack_types),
+      backgroundColor:C.colors,borderColor:'#161b22',borderWidth:2}]},
+    options:{plugins:{legend:{position:'right'}}}});
+
+  new Chart(document.getElementById('ips'),{type:'bar',
+    data:{labels:D.top_ips.map(i=>i.ip),datasets:[{data:D.top_ips.map(i=>i.risk_score),
+      backgroundColor:D.top_ips.map(i=>i.risk_level==='HIGH'?C.colors[0]:i.risk_level==='MEDIUM'?C.colors[1]:C.colors[4])}]},
+    options:{indexAxis:'y',scales:{x:{max:100}},plugins:{legend:{display:false}}}});
+
+  new Chart(document.getElementById('timeline'),{type:'line',
+    data:{labels:D.timeline.map(t=>t.time),datasets:[{data:D.timeline.map(t=>t.count),
+      label:'Mistenkelige hendelser',borderColor:C.colors[0],backgroundColor:'rgba(248,81,73,.15)',
+      fill:true,tension:.3,pointRadius:2}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+}
+</script>
+</body>
+</html>
