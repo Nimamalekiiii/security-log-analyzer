@@ -4,8 +4,25 @@
 
 ### 🔗 [**Live SIEM Dashboard →**](https://nimamalekiiii.github.io/security-log-analyzer/)
 
+[![Security CI](https://github.com/Nimamalekiiii/security-log-analyzer/actions/workflows/security.yml/badge.svg)](https://github.com/Nimamalekiiii/security-log-analyzer/actions/workflows/security.yml)
+
 A Python-based cybersecurity tool for analyzing login logs and detecting suspicious authentication activity.
 
+
+
+## 🔄 DevSecOps – automatic security pipeline
+
+Every push runs a **GitHub Actions** pipeline that builds security into the workflow:
+
+| Check | Tool | What it catches |
+|---|---|---|
+| 🧪 Unit tests | `unittest` | Broken detection logic |
+| 🐍 Static analysis | **Bandit** | Insecure Python patterns (SAST) |
+| 🔑 Secret scan | **Gitleaks** | Passwords / API keys committed by mistake |
+| 📦 Vulnerability scan | **Trivy** | Known vulnerabilities in files & dependencies |
+
+The status badge at the top turns green when all checks pass — the same practice
+used in professional software teams.
 
 ## 🔗 Related projects
 
