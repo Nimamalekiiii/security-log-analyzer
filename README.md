@@ -22,6 +22,29 @@ The analyzer currently detects:
 - Possible account enumeration
 - High numbers of failed login attempts
 
+
+##  Web Attack Detection
+
+In addition to login logs, the tool can analyze **web server access logs**
+(Apache/Nginx) and detect common web attacks – the same ones demonstrated in my
+[SecForge lab](https://github.com/Nimamalekiiii/secforge-lab):
+
+- SQL injection (`UNION SELECT`, `OR 1=1`, …)
+- Cross-Site Scripting (XSS)
+- Path traversal (`../../etc/passwd`)
+- Automated scanners / tools (by user-agent)
+- Path scanning and directory enumeration (many 404s)
+
+```bash
+# Analyze a web access log
+python web_analyzer.py web_access.log
+
+# JSON output
+python web_analyzer.py web_access.log --json
+```
+
+Each source IP gets a risk score and level, just like the login analysis.
+
 ##  Risk Assessment
 
 Each IP address receives a risk score from `0–100`.
