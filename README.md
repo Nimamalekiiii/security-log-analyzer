@@ -1,10 +1,10 @@
-# Security Log Analyzer 🛡️
+# Security Log Analyzer 
 
-> 🚧 **Work in progress** – this project is still under development, and more changes are coming.
+>  **Work in progress** – this project is still under development, and more changes are coming.
 
 A Python-based cybersecurity tool for analyzing login logs and detecting suspicious authentication activity.
 
-## 📌 About
+##  About
 
 Security Log Analyzer is a command-line security analysis tool developed to analyze authentication logs and identify potentially suspicious login behavior.
 
